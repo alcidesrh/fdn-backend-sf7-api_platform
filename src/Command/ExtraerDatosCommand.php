@@ -4,9 +4,7 @@ namespace App\Command;
 
 use App\Entity\Agencia;
 use App\Entity\Estacion;
-use App\Entity\Enclave;
 use App\Entity\Parada;
-use App\Entity\ParadaIntermedia;
 use App\Entity\Ruta;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;

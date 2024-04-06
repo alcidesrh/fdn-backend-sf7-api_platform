@@ -31,11 +31,15 @@ class User extends UserBase implements UserInterface, PasswordAuthenticatedUserI
     private Collection $apiTokens;
 
     private ?array $accessTokenScopes = null;
+
+    #[ORM\ManyToMany(targetEntity: Permiso::class, mappedBy: 'usuarios')]
+    private Collection $permisos;
     public function __construct(string $userIdentifier = '', array $roles = []) {
 
         $this->username = $userIdentifier;
         $this->roles = $roles;
         $this->apiTokens = new ArrayCollection();
+        $this->permisos = new ArrayCollection();
     }
 
     public function getUsername(): string {
@@ -152,5 +156,32 @@ class User extends UserBase implements UserInterface, PasswordAuthenticatedUserI
     }
     public function markAsTokenAuthenticated(array $scopes) {
         $this->accessTokenScopes = $scopes;
+    }
+
+    /**
+     * @return Collection<int, Permiso>
+     */
+    public function getPermisos(): Collection
+    {
+        return $this->permisos;
+    }
+
+    public function addPermiso(Permiso $permiso): static
+    {
+        if (!$this->permisos->contains($permiso)) {
+            $this->permisos->add($permiso);
+            $permiso->addUsuario($this);
+        }
+
+        return $this;
+    }
+
+    public function removePermiso(Permiso $permiso): static
+    {
+        if ($this->permisos->removeElement($permiso)) {
+            $permiso->removeUsuario($this);
+        }
+
+        return $this;
     }
 }

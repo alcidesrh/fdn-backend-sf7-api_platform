@@ -16,7 +16,8 @@ doctrine:
                     port: "%env(systemfdn_port)%"
                     charset: UTF-8
                     options:
-                        trustServerCertificate: true
+                        trustServerCertificate: true,
+                        encrypt: false,
                     dbname: "%env(systemfdn_dbname)%"
                     user: "%env(systemfdn_user)%"
                     password: "%env(systemfdn_password)%"

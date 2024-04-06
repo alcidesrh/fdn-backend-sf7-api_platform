@@ -5,7 +5,7 @@
 
 # Versions
 # hadolint ignore=DL3007
-FROM dunglas/frankenphp:1-alpine-php8.3 AS frankenphp_upstream
+FROM dunglas/frankenphp:1-php8.3 AS frankenphp_upstream
 FROM composer/composer:2-bin AS composer_upstream
 
 
@@ -21,15 +21,20 @@ WORKDIR /app
 
 # persistent / runtime deps
 # hadolint ignore=DL3018
-RUN apk add --no-cache \
+RUN apt-get update; \
+	apt-get install --no-install-recommends -y \
 	acl \
 	file \
 	gettext \
 	git \
+	zip \
+	gnupg \
+	; \
 
 	RUN set -eux; \
 	install-php-extensions \
 	apcu \
+	bcmath \
 	intl \
 	opcache \
 	zip \
@@ -46,7 +51,6 @@ COPY --link frankenphp/conf.d/app.ini $PHP_INI_DIR/conf.d/
 COPY --link --chmod=755 frankenphp/docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 COPY --link frankenphp/Caddyfile /etc/caddy/Caddyfile
 COPY --link --chmod=755 frankenphp/caddy_linux_amd64 /etc/caddy/caddy
-
 ENTRYPOINT ["docker-entrypoint"]
 
 # https://getcomposer.org/doc/03-cli.md#composer-allow-superuser
@@ -57,6 +61,49 @@ COPY --from=composer_upstream --link /composer /usr/bin/composer
 
 HEALTHCHECK --start-period=60s CMD curl -f http://localhost:2019/metrics || exit 1
 CMD [ "frankenphp", "run", "--config", "/etc/caddy/Caddyfile" ]
+
+## Start Sql Server----------------------------------------------------------------
+
+RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+
+#Download appropriate package for the OS version
+#Choose only ONE of the following, corresponding to your OS version
+
+#Debian 12
+RUN curl https://packages.microsoft.com/config/debian/12/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
+
+RUN  apt-get update
+RUN  ACCEPT_EULA=Y apt-get install -y msodbcsql18
+# optional: for bcp and sqlcmd
+RUN  ACCEPT_EULA=Y apt-get install -y mssql-tools18
+# RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
+# RUN source ~/.bashrc
+# optional: for unixODBC development headers
+RUN  apt-get install -y unixodbc-dev
+# optional: kerberos library for debian-slim distributions
+RUN  apt-get install -y libgssapi-krb5-2
+RUN install-php-extensions pdo_sqlsrv sqlsrv
+
+RUN printf ' \n\n [openssl_init] \n ssl_conf = ssl_sect \n\n [ssl_sect] \n system_default = system_default_sect \n\n [system_default_sect] \n CipherString = DEFAULT@SECLEVEL=0' >> /etc/ssl/openssl.cnf
+# ------------------------------------------------
+
+# RUN apt-get install debian-archive-keyring && apt-key update
+# # RUN curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
+# RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
+
+# #Debian 12
+# RUN curl https://packages.microsoft.com/config/debian/12/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
+# RUN apt-get update
+# RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
+# # optional: for bcp and sqlcmd
+# RUN ACCEPT_EULA=Y apt-get install -y mssql-tools
+# # optional: for unixODBC development headers
+# RUN apt-get install -y unixodbc-dev
+# # optional: kerberos library for debian-slim distributions
+# RUN apt-get install -y libgssapi-krb5-2
+
+# RUN install-php-extensions pdo_sqlsrv sqlsrv
+## End Sql Server----------------------------------------------------------------
 
 # Dev FrankenPHP image
 FROM frankenphp_base AS frankenphp_dev
@@ -69,35 +116,6 @@ RUN set -eux; \
 	install-php-extensions \
 	xdebug \
 	;
-###>sql server drivers
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | RUN tee /etc/apt/trusted.gpg.d/microsoft.asc
-
-#Download appropriate package for the OS version
-#Choose only ONE of the following, corresponding to your OS version
-
-#Debian 12
-RUN curl https://packages.microsoft.com/config/debian/12/prod.list | RUN tee /etc/apt/sources.list.d/mssql-release.list
-
-RUN apt-get update
-RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
-# optional: for bcp and sqlcmd
-RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
-RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
-RUN source ~/.bashrc
-# optional: for unixODBC development headers
-RUN apt-get install -y unixodbc-dev
-# optional: kerberos library for debian-slim distributions
-RUN apt-get install -y libgssapi-krb5-2
-
-RUN pecl install sqlsrv
-RUN pecl install pdo_sqlsrv
-RUN su
-RUN printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php/8.1/mods-available/sqlsrv.ini
-RUN printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php/8.1/mods-available/pdo_sqlsrv.ini
-RUN exit
-RUN phpenmod sqlsrv pdo_sqlsrv
-
-###>sql server drivers
 
 COPY --link frankenphp/conf.d/app.dev.ini $PHP_INI_DIR/conf.d/
 
