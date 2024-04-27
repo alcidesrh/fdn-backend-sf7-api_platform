@@ -3,9 +3,10 @@
 namespace App\Entity;
 
 use App\Entity\Base\Base;
+use App\Entity\Base\TimestampableEntity;
 use App\Repository\ApiTokenRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+
 
 #[ORM\Entity(repositoryClass: ApiTokenRepository::class)]
 class ApiToken extends Base {

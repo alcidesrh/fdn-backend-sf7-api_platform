@@ -1,4 +1,9 @@
 <?php
+
+namespace App\Command;
+
+use ReflectionClass;
+
 class Factory {
   static string $NAME_SPACE = 'App\Entity\\';
   static function create($class_name, $data = [], $include = [], $exclude = []) {

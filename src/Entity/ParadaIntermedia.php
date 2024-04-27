@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Entity\Base\Base;
-use App\Entity\Base\NombreNotaStatusBase;
 use App\Repository\ParadaIntermediaRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

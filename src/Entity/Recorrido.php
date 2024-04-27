@@ -3,7 +3,7 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use App\Entity\Base\NombreNotaStatusBase;
+use App\Entity\Base\NombreNotaStatusBaseSuperClass;
 use App\Entity\Base\Traits\LegacyTrait;
 use App\Repository\RecorridoRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,7 +16,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['recorrido' => Recorrido::class, 'ruta' => Ruta::class])]
 #[ApiResource]
-class Recorrido extends NombreNotaStatusBase {
+class Recorrido extends NombreNotaStatusBaseSuperClass {
 
     use LegacyTrait;
 

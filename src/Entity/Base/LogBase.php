@@ -4,7 +4,7 @@ namespace App\Entity\Base;
 
 use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+
 use Doctrine\DBAL\Types\Types;
 
 #[ORM\MappedSuperclass]

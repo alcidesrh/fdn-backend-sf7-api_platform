@@ -16,22 +16,19 @@ use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 use PHPUnit\Framework\Attributes\Test;
 
-final class BookTest extends ApiTestCase
-{
+final class BookTest extends ApiTestCase {
     use Factories;
     use ResetDatabase;
 
     private Client $client;
 
-    protected function setup(): void
-    {
+    protected function setup(): void {
         $this->client = self::createClient();
     }
 
     #[Test]
     #[DataProvider(methodName: 'getUrls')]
-    public function asAnonymousICanGetACollectionOfBooks(FactoryCollection $factory, string $url, int $hydraTotalItems): void
-    {
+    public function asAnonymousICanGetACollectionOfBooks(FactoryCollection $factory, string $url, int $hydraTotalItems): void {
         // Cannot use Factory as data provider because BookFactory has a service dependency
         $factory->create();
 
@@ -46,8 +43,7 @@ final class BookTest extends ApiTestCase
         self::assertMatchesJsonSchema(file_get_contents(__DIR__ . '/schemas/Book/collection.json'));
     }
 
-    public static function getUrls(): iterable
-    {
+    public static function getUrls(): iterable {
         yield 'all books' => [
             BookFactory::new()->many(35),
             '/books',
@@ -86,8 +82,7 @@ final class BookTest extends ApiTestCase
     }
 
     #[Test]
-    public function asAdminUserICanGetACollectionOfBooksOrderedByTitle(): void
-    {
+    public function asAdminUserICanGetACollectionOfBooksOrderedByTitle(): void {
         BookFactory::createOne(['title' => 'Hyperion']);
         BookFactory::createOne(['title' => 'The Wandering Earth']);
         BookFactory::createOne(['title' => 'Ball Lightning']);
@@ -103,8 +98,7 @@ final class BookTest extends ApiTestCase
     }
 
     #[Test]
-    public function asAnonymousICannotGetAnInvalidBook(): void
-    {
+    public function asAnonymousICannotGetAnInvalidBook(): void {
         BookFactory::createOne();
 
         $this->client->request('GET', '/books/invalid');
@@ -113,8 +107,7 @@ final class BookTest extends ApiTestCase
     }
 
     #[Test]
-    public function asAnonymousICanGetABook(): void
-    {
+    public function asAnonymousICanGetABook(): void {
         $book = BookFactory::createOne();
         ReviewFactory::createOne(['rating' => 1, 'book' => $book]);
         ReviewFactory::createOne(['rating' => 2, 'book' => $book]);

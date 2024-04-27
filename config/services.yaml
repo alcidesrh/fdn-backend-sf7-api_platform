@@ -34,3 +34,13 @@ services:
                 # you want to pass the *service* whose id is 'monolog.logger.request',
                 # and not just the *string* 'monolog.logger.request'
                 $systemfdn: "@doctrine.orm.systemfdn_entity_manager"
+
+    # App\Services\FormKitGenerate:
+    #         arguments:
+    #             $entityManager: "@doctrine.orm.default_entity_manager"
+    #         tags: [ 'api_platform.state_provider' ]
+
+
+    # App\Services\FormKitGenerate:
+    #         factory:   ['@App\Factory\FormKitFactory', create]
+    #         arguments: ['@doctrine.orm.default_entity_manager']

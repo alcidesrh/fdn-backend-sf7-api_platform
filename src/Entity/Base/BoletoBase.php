@@ -6,7 +6,7 @@ use App\Entity\Base\Interfaces\EstadoVentaInterface;
 use App\Entity\Base\Interfaces\StatusInterface;
 use App\Entity\Base\Traits\StatusTrait;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
+
 use Doctrine\DBAL\Types\Types;
 
 #[ORM\MappedSuperclass]

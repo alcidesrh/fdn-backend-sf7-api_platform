@@ -8,7 +8,7 @@ use App\Entity\Parada;
 use App\Entity\Ruta;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use Factory;
+
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

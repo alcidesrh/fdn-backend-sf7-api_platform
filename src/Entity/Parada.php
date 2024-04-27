@@ -2,14 +2,16 @@
 
 namespace App\Entity;
 
-use App\Entity\Base\NombreNotaStatusBase;
+use App\Entity\Base\NombreNotaStatusBaseSuperClass;
 use App\Repository\ParadaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: ParadaRepository::class)]
-class Parada extends NombreNotaStatusBase {
+#[ApiResource]
+class Parada extends NombreNotaStatusBaseSuperClass {
     #[ORM\ManyToOne]
     private ?Enclave $enclave = null;
 

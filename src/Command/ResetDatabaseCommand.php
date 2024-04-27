@@ -6,13 +6,11 @@ namespace App\Command;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Process\InputStream;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
@@ -53,14 +51,16 @@ class ResetDatabaseCommand extends Command {
                 [$phpBinaryPath, 'bin/console', 'doctrine:database:create', '-n', '--quiet'],
                 ['rm', '-r', 'migrations/*'],
                 [$phpBinaryPath, 'bin/console', 'doctrine:migrations:diff', '-n', '--quiet'],
-                [$phpBinaryPath, 'bin/console', 'doctrine:migrations:migrate', '-n', '--quiet']
+                [$phpBinaryPath, 'bin/console', 'doctrine:migrations:migrate', '-n', '--quiet'],
             ];
-
             $io->progressStart(100);
             foreach ($process as $key => $value) {
                 $io->progressAdvance(20);
-                (new Process($value))->run();
+                ($p = new Process($value))->run();
+                // $io->block($p->getOutput());
             }
+            $p = Process::fromShellCommandline('docker exec fdn-php-1 php bin/console migrar');
+            $p->run();
             $io->success('Base de datos generada!');
         } catch (\Throwable $th) {
             throw $th;

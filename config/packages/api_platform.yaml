@@ -22,6 +22,7 @@ api_platform:
         public: true
     # Good defaults for REST APIs
     defaults:
+        route_prefix: 'api'
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
@@ -36,7 +37,12 @@ api_platform:
             access_token:
                 name: Authorization
                 type: header
-
+    # mapping:
+    #     paths:
+    #         - '%kernel.project_dir%/src/Entity'
+    #         - '%kernel.project_dir%/src/Form'
+    # resource_class_directories:
+    #     - '%kernel.project_dir%/src/Entity'
 services:
     _defaults:
         autowire: false
@@ -46,7 +52,7 @@ services:
     app.filter.review.admin.user:
         parent: 'api_platform.doctrine.orm.search_filter'
         arguments:
-            $properties: { user: 'exact' } ]
+            $properties: { user: 'exact' }
         tags: [ 'api_platform.filter' ]
 
     app.filter.review.admin.book:

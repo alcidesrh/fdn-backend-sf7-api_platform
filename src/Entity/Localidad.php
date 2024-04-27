@@ -3,26 +3,19 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use App\Entity\Base\Base;
 use App\Repository\LocalidadRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: LocalidadRepository::class)]
 #[ApiResource]
-class Localidad {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+class Localidad extends Base {
 
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 
     #[ORM\ManyToOne]
     private ?Pais $pais = null;
-
-    public function getId(): ?int {
-        return $this->id;
-    }
 
     public function getNombre(): ?string {
         return $this->nombre;

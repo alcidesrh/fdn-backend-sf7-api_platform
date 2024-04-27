@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Attribute\FormCreateExclude;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -57,6 +58,7 @@ class User extends UserBase implements UserInterface, PasswordAuthenticatedUserI
      *
      * @see UserInterface
      */
+    #[FormCreateExclude]
     public function getUserIdentifier(): string {
         return (string) $this->username;
     }
@@ -161,13 +163,11 @@ class User extends UserBase implements UserInterface, PasswordAuthenticatedUserI
     /**
      * @return Collection<int, Permiso>
      */
-    public function getPermisos(): Collection
-    {
+    public function getPermisos(): Collection {
         return $this->permisos;
     }
 
-    public function addPermiso(Permiso $permiso): static
-    {
+    public function addPermiso(Permiso $permiso): static {
         if (!$this->permisos->contains($permiso)) {
             $this->permisos->add($permiso);
             $permiso->addUsuario($this);
@@ -176,8 +176,7 @@ class User extends UserBase implements UserInterface, PasswordAuthenticatedUserI
         return $this;
     }
 
-    public function removePermiso(Permiso $permiso): static
-    {
+    public function removePermiso(Permiso $permiso): static {
         if ($this->permisos->removeElement($permiso)) {
             $permiso->removeUsuario($this);
         }

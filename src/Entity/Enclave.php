@@ -2,16 +2,17 @@
 
 namespace App\Entity;
 
-use App\Entity\Base\NombreNotaStatusBase;
+use App\Entity\Base\NombreNotaStatusBaseSuperClass;
 use App\Repository\EnclaveRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
 
 #[ORM\Entity(repositoryClass: EnclaveRepository::class)]
 #[ORM\InheritanceType('JOINED')]
 #[ORM\DiscriminatorColumn(name: 'discr', type: 'string')]
 #[ORM\DiscriminatorMap(['enclave' => Enclave::class, 'estacion' => Estacion::class, 'agencia' => Agencia::class])]
 #[ApiResource]
-class Enclave extends NombreNotaStatusBase {
+class Enclave extends NombreNotaStatusBaseSuperClass {
 
   #[ORM\Column(length: 50, nullable: true)]
   protected ?string $email = null;
